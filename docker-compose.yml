@@ -1,0 +1,134 @@
+version: '2.0'
+services:
+  drupal:
+    #image: kalpit/ultimatephpdev:7.0
+    #image: kalpit/ultimatephpdev:7.0
+    #image: kalpit/ultimatephpdev:7.2
+    image: kalpit/ultimatephpdev:7.3.3
+    #image: kalpit/ultimatephpdev:7.4
+    #image: "kalpit/addweb:5.6"
+    volumes:
+      - ./web:/var/www/html:rw
+      - ./web/html:/var/www/html/html:rw
+      - ./web/web:/var/www/html/web:rw
+      - ./web/docroot:/var/www/html/docroot:rw
+      - ./web/public:/var/www/html/public:rw
+      - ./logs/apache2:/var/log/apache2:rw
+      - ./conf/php.ini:/usr/local/etc/php/conf.d/php.ini
+      - ./conf/vhost.conf:/etc/apache2/sites-available/vhost.conf
+      - ./conf/vhost.conf:/etc/apache2/sites-enabled/vhost.conf
+      - ./conf/ssl:/etc/apache2/ssl
+      - ./conf/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini
+      - $HOME/.ssh:/root/.ssh
+      - ./home:/root
+      - ./conf/ssmtp.conf:/etc/ssmtp/ssmtp.conf
+    links:
+      - "db:mysql"
+      #- "postgres:postgres"
+      #- "solr:solr"
+      #- "memcached:memcached"
+      #- "varnish:varnish"
+      #-"redis:redis"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8005-8020:8005-8020"
+    restart: always
+  db:
+    image: mysql:5.7
+    env_file:
+      - variables.env
+    # environment:
+    #   - MYSQL_USER=root
+    #   - MYSQL_PASSWORD=root
+    #   - MYSQL_DATABASE=test
+    #   - MYSQL_ROOT_PASSWORD=root
+    #ports:
+    #  - "3306:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql:rw
+      - ./mysql-db:/docker-entrypoint-initdb.d
+    command: mysqld --max_allowed_packet=128M
+    restart: always
+  pma:
+    image: phpmyadmin/phpmyadmin
+    env_file:
+      - variables.env
+    # environment:
+    #   - PMA_HOST=mysql
+    #   - MYSQL_USER=root
+    #   - MYSQL_PASSWORD=root
+    #   - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "8002:80"
+    links:
+      - "db:mysql"
+    restart: always
+
+  #postgres:
+  #  image: postgres
+  #  restart: always
+  #  environment:
+  #    - POSTGRES_ROOT_PASSWORD=root
+  #    - POSTGRES_PASSWORD=root
+  #    - POSTGRES_USER=root
+  #    - POSTGRES_DB=pg
+  #  ports:
+  #    - "5432:5432"
+  #  volumes:
+  #    - ./postgres:/var/lib/postgresql/data
+  #    - ./postgres-db:/docker-entrypoint-initdb.d
+
+  #solr:
+  #   image: solr:latest
+  #   ports:
+  #     - "8983:8983"
+  #   volumes:
+  #     - ./solr_data:/opt/solr/server/solr/mycores
+  #   entrypoint:
+  #     - docker-entrypoint.sh
+  #     - solr-precreate
+  #     - core_name
+  #     - /solr-conf
+  #   volumes_from: 
+  #     - drupal
+  #   restart: always
+
+  # memcached:
+  #   image: memcached:1.4.33
+  #   ports:
+  #     - 11211:11211
+  #   #restart: always
+  #   volumes_from: 
+  #     - drupal
+  # varnish:
+  #   image: wodby/drupal-varnish:4.1-2.1.0
+  #   #image: varnish:multi
+  #   environment:
+  #     - VARNISH_SECRET=secret
+  #     - VARNISH_BACKEND_HOST=127.0.0.1
+  #     - VARNISH_BACKEND_PORT=80
+  #   volumes:
+  #     - ./varnish:/etc/varnish:rw
+  #   ports:
+  #     - "6081:6081"
+  #     - "6082:6082"
+  #   #restart: always
+  #   volumes_from: 
+  #     - drupal
+  # redis:
+  #   image: redis:2.8
+  #   ports:
+  #     - "6379:6379"
+
+  # node:
+  #   image: node
+  #   #working_dir: /var/www/html
+  #   # ports:
+  #   #   - "3000"
+  #   volumes_from: 
+  #     - drupal
+  #    #command: sh -c 'npm install && npm run start'
+volumes:
+  solr_data:
+    external: false
