@@ -1,0 +1,9 @@
+{
+    "require": {
+        "drush/drush": "8.*",
+        "hirak/prestissimo": "^0.3.7",
+        "laravel/installer": "~1.1",
+	 "pantheon-systems/terminus": "^1.8",
+        "hussainweb/drupal-composer-init": "^1.0"
+    }
+}

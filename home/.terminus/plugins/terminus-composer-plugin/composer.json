@@ -1,0 +1,14 @@
+{
+    "name": "pantheon-systems/terminus-composer-plugin",
+    "description": "Composer - A Terminus plugin for running Composer commands on a Pantheon site",
+    "type": "terminus-plugin",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": { "Pantheon\\TerminusComposer\\": "src" }
+    },
+    "extra": {
+        "terminus": {
+            "compatible-version": "^1"
+        }
+    }
+}
